@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7f4ef" />
+      <stop offset="45%" stop-color="#edf3ea" />
+      <stop offset="100%" stop-color="#dfeadf" />
+    </linearGradient>
+    <linearGradient id="orb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b7d9b6" />
+      <stop offset="60%" stop-color="#7fae8d" />
+      <stop offset="100%" stop-color="#4b6d5f" />
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#3f564a" flood-opacity="0.18" />
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1080" cy="95" r="180" fill="#c8ddc8" opacity="0.35" />
+  <circle cx="100" cy="590" r="190" fill="#e7efe3" opacity="0.7" />
+
+  <g transform="translate(120,165)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="960" height="300" rx="34" fill="#ffffff" opacity="0.86" />
+  </g>
+
+  <g transform="translate(180,225)">
+    <circle cx="70" cy="70" r="62" fill="url(#orb)" />
+    <path d="M20 78 C34 56, 58 56, 72 78 C86 100, 110 100, 124 78" fill="none" stroke="#ffffff" stroke-width="10" stroke-linecap="round" />
+    <circle cx="96" cy="40" r="8" fill="#ffffff" opacity="0.9" />
+  </g>
+
+  <text x="360" y="305" font-family="Poppins, Segoe UI, Arial, sans-serif" font-size="84" font-weight="600" fill="#3f564a" letter-spacing="1">
+    Wellness
+  </text>
+  <text x="364" y="355" font-family="Poppins, Segoe UI, Arial, sans-serif" font-size="34" font-weight="500" fill="#6f8f7f" letter-spacing="5">
+    PERSONAL HEALTH FLOW
+  </text>
+  <text x="183" y="480" font-family="Poppins, Segoe UI, Arial, sans-serif" font-size="34" fill="#4d6358">
+    =:5B0 74>@>2LO 4;O <O3:>9 8 ?5@A>=0;L=>9 wellness-:>=AC;LB0F88
+  </text>
+</svg>

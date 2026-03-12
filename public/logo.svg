@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80" role="img" aria-label="Nina wellness logo">
+  <defs>
+    <linearGradient id="nina-petal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f7d57c" />
+      <stop offset="45%" stop-color="#ef9f58" />
+      <stop offset="100%" stop-color="#d6674d" />
+    </linearGradient>
+    <linearGradient id="nina-leaf" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8cc7a2" />
+      <stop offset="100%" stop-color="#3f7f64" />
+    </linearGradient>
+    <linearGradient id="nina-word" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2b5d4a" />
+      <stop offset="100%" stop-color="#5a8d77" />
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(8,8)">
+    <rect x="0" y="0" width="62" height="62" rx="18" fill="#fffaf1" />
+    <g transform="translate(31,31)">
+      <path d="M0 -20 C7 -20 11 -13 11 -6 C11 0 6 6 0 6 C-6 6 -11 0 -11 -6 C-11 -13 -7 -20 0 -20 Z" fill="url(#nina-petal)" />
+      <path d="M20 0 C20 7 13 11 6 11 C0 11 -6 6 -6 0 C-6 -6 0 -11 6 -11 C13 -11 20 -7 20 0 Z" fill="url(#nina-petal)" transform="rotate(90)" />
+      <path d="M0 20 C7 20 11 13 11 6 C11 0 6 -6 0 -6 C-6 -6 -11 0 -11 6 C-11 13 -7 20 0 20 Z" fill="url(#nina-petal)" transform="rotate(180)" />
+      <path d="M-20 0 C-20 7 -13 11 -6 11 C0 11 6 6 6 0 C6 -6 0 -11 -6 -11 C-13 -11 -20 -7 -20 0 Z" fill="url(#nina-petal)" transform="rotate(270)" />
+      <circle cx="0" cy="0" r="8" fill="#fff1d0" />
+      <path d="M-7 14 C-3 10 3 10 7 14 C5 21 1 25 -1 25 C-3 25 -5 22 -7 14 Z" fill="url(#nina-leaf)" />
+    </g>
+  </g>
+
+  <text x="84" y="38" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="31" font-weight="700" fill="url(#nina-word)" letter-spacing="0.5">
+    NINA
+  </text>
+  <text x="86" y="58" font-family="Trebuchet MS, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#6d8b7a" letter-spacing="2.2">
+    WELLNESS STUDIO
+  </text>
+</svg>
