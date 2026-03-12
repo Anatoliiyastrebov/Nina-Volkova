@@ -12,8 +12,8 @@ export default async function handler(request: Request): Promise<Response> {
     });
   }
 
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const token = process.env.BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.CHAT_ID || process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) {
     return new Response(JSON.stringify({ ok: false, error: 'missing_env' }), {
       status: 500,
