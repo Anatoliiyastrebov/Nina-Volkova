@@ -2,6 +2,18 @@
   margin-top: 8px;
 }
 
+.contact-methods-summary-error {
+  margin: 0 0 14px 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(217, 83, 79, 0.35);
+  background: rgba(217, 83, 79, 0.08);
+  color: #8b3a3a;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
 .contact-methods-hint {
   font-size: 14px;
   color: #6b7d6b;

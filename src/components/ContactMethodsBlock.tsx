@@ -17,6 +17,8 @@ interface ContactMethodsBlockProps {
   formData: Record<string, any>;
   onFieldChange: (fieldId: string, value: any) => void;
   errors?: Record<string, string>;
+  /** Код ошибки уровня всего блока (например, нет ни одного валидного контакта) */
+  summaryError?: string;
 }
 
 function methodLabelKey(method: ContactMethodId): string {
@@ -51,7 +53,8 @@ export const ContactMethodsBlock: React.FC<ContactMethodsBlockProps> = ({
   lang,
   formData,
   onFieldChange,
-  errors
+  errors,
+  summaryError
 }) => {
   const selected = normalizeContactSelected(formData[CONTACT_SELECTED_KEY]);
   const values = normalizeContactValues(formData[CONTACT_VALUES_KEY]);
@@ -82,6 +85,11 @@ export const ContactMethodsBlock: React.FC<ContactMethodsBlockProps> = ({
 
   return (
     <div className="contact-methods-block" data-field-id="contact_methods">
+      {summaryError === 'contact_details_missing' && (
+        <div className="contact-methods-summary-error" role="alert">
+          {t('common.contactDetailsMissing', lang)}
+        </div>
+      )}
       <p className="contact-methods-hint">{t('common.contactMethodsHint', lang)}</p>
       <div className="contact-methods-grid">
         {CONTACT_METHOD_IDS.map((method) => {

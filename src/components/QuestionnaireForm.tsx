@@ -390,6 +390,7 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
             formData={formData}
             onFieldChange={onFieldChange}
             errors={errors}
+            summaryError={errors?.contact_methods}
           />
         );
       case 'text':
@@ -710,7 +711,9 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
         {question.required && <span className="required">*</span>}
       </label>
       {renderField()}
-      {error && <div className="error-message">{error}</div>}
+      {error && question.type !== 'contact-methods' && (
+        <div className="error-message">{error}</div>
+      )}
       
       {/* Условные поля */}
       {showConditionalFields && conditionalFields && (

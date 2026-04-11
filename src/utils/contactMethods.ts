@@ -182,6 +182,18 @@ export function validateContactMethodValue(
   }
 }
 
+/** Хотя бы один способ связи выбран и заполнен корректно (с учётом устаревших полей). */
+export function hasAtLeastOneValidContact(formData: Record<string, any>): boolean {
+  const values = getEffectiveContactValues(formData);
+  for (const id of CONTACT_METHOD_IDS) {
+    const raw = values[id];
+    if (raw === undefined || raw === null) continue;
+    const v = String(raw);
+    if (validateContactMethodValue(id, v) === null) return true;
+  }
+  return false;
+}
+
 export function validateContactMethodsBlock(formData: Record<string, any>): Record<string, string> {
   const errors: Record<string, string> = {};
   const selected = normalizeContactSelected(formData[CONTACT_SELECTED_KEY]);
@@ -194,5 +206,10 @@ export function validateContactMethodsBlock(formData: Record<string, any>): Reco
       errors[`${CONTACT_VALUES_KEY}.${method}`] = err;
     }
   }
+
+  if (!hasAtLeastOneValidContact(formData)) {
+    errors[CONTACT_METHODS_FIELD_ID] = 'contact_details_missing';
+  }
+
   return errors;
 }

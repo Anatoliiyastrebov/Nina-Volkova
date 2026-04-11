@@ -1,6 +1,6 @@
 // Интеграция с Telegram Bot API
 import { getQuestionnaireById, type QuestionField } from '../data/questionnaires';
-import { formatContactLinesPlain } from './contactMethods';
+import { formatContactLinesPlain, hasAtLeastOneValidContact } from './contactMethods';
 import html2pdf from 'html2pdf.js';
 
 const CONTACT_FORM_KEYS = new Set([
@@ -490,6 +490,11 @@ export async function sendToTelegram(
 ): Promise<boolean> {
   try {
     if (!isRelayConfigured()) {
+      return false;
+    }
+
+    if (!hasAtLeastOneValidContact(formData)) {
+      console.warn('sendToTelegram: нет ни одного валидного способа связи');
       return false;
     }
 

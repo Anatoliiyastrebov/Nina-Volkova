@@ -59,7 +59,9 @@ const translations: Record<Language, Translations> = {
       contactErrRequired: 'Заполните это поле',
       contactErrInvalidEmail: 'Некорректный email',
       contactErrInvalidPhone: 'Укажите корректный номер (от 8 цифр)',
-      contactErrInvalidGeneric: 'Слишком короткое значение'
+      contactErrInvalidGeneric: 'Слишком короткое значение',
+      contactDetailsMissing:
+        'Чтобы мы могли с вами связаться, укажите хотя бы один способ связи и корректно заполните соответствующее поле.'
     },
     questionnaires: {
       babies: 'Малыши до 1 года',
@@ -141,7 +143,9 @@ const translations: Record<Language, Translations> = {
       contactErrRequired: 'This field is required',
       contactErrInvalidEmail: 'Invalid email',
       contactErrInvalidPhone: 'Enter a valid phone number (at least 8 digits)',
-      contactErrInvalidGeneric: 'Value is too short'
+      contactErrInvalidGeneric: 'Value is too short',
+      contactDetailsMissing:
+        'Please choose at least one contact method and enter valid details so we can reach you.'
     },
     questionnaires: {
       babies: 'Babies up to 1 year',
