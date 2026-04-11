@@ -1,6 +1,16 @@
 // Интеграция с Telegram Bot API
 import { getQuestionnaireById, type QuestionField } from '../data/questionnaires';
+import { formatContactLinesPlain } from './contactMethods';
 import html2pdf from 'html2pdf.js';
+
+const CONTACT_FORM_KEYS = new Set([
+  'contact_methods',
+  'contact_methods_selected',
+  'contact_methods_values',
+  'contact_telegram',
+  'contact_instagram',
+  'contact_phone'
+]);
 
 const TELEGRAM_API_BASE_PATH = '/api/telegram';
 const TELEGRAM_REQUEST_TIMEOUT_MS = 300000;
@@ -201,7 +211,14 @@ function createQuestionnaireHTML(
   const height = formData['q1_height'] || '';
   
   // Обрабатываем остальные ответы
-  const processedKeys = new Set(['q1_name', 'q1_surname', 'q1_age', 'q1_weight', 'q1_height', 'contact_telegram', 'contact_instagram']);
+  const processedKeys = new Set([
+    'q1_name',
+    'q1_surname',
+    'q1_age',
+    'q1_weight',
+    'q1_height',
+    ...CONTACT_FORM_KEYS
+  ]);
   
   // Определяем, с какого вопроса начинать нумерацию
   let startNumberingFrom = 'q1_weight_goal';
@@ -251,7 +268,8 @@ function createQuestionnaireHTML(
              value !== null && 
              value !== undefined && 
              value !== '' &&
-             !key.endsWith('_other');
+             !key.endsWith('_other') &&
+             !(typeof value === 'object' && !Array.isArray(value) && !(value instanceof FileList));
     })
     .sort(([keyA], [keyB]) => {
       const orderA = questionOrderMap.get(keyA) ?? 9999;
@@ -333,18 +351,14 @@ function createQuestionnaireHTML(
     `;
   }
   
-  // Контактные данные
-  const telegram = formData['contact_telegram'] || '';
-  const instagram = formData['contact_instagram'] || '';
-  
+  // Контактные данные (новый блок + устаревшие поля через getEffectiveContactValues)
+  const contactLines = formatContactLinesPlain(formData);
   let contactsHTML = '';
-  if (telegram) {
-    contactsHTML += `<p style="margin: 5px 0;"><strong>Telegram:</strong> ${escapeHtml(telegram)}</p>`;
-  }
-  if (instagram) {
-    contactsHTML += `<p style="margin: 5px 0;"><strong>Instagram:</strong> @${escapeHtml(instagram)}</p>`;
-  }
-  if (!telegram && !instagram) {
+  if (contactLines.length > 0) {
+    contactLines.forEach((line) => {
+      contactsHTML += `<p style="margin: 5px 0;">${escapeHtml(line)}</p>`;
+    });
+  } else {
     contactsHTML = '<p style="margin: 5px 0; color: #999;">Не указаны</p>';
   }
   
@@ -652,12 +666,15 @@ function formatQuestionnaireMessage(
     message += `\n`;
   }
   
-  // Добавляем контактные данные в конец
-  const telegram = formData['contact_telegram'] || '';
-  const instagram = formData['contact_instagram'] || '';
-  
   // Добавляем остальные ответы
-  const processedKeys = new Set(['q1_name', 'q1_surname', 'q1_age', 'q1_weight', 'q1_height', 'contact_telegram', 'contact_instagram']);
+  const processedKeys = new Set([
+    'q1_name',
+    'q1_surname',
+    'q1_age',
+    'q1_weight',
+    'q1_height',
+    ...CONTACT_FORM_KEYS
+  ]);
   
   // Определяем, с какого вопроса начинать нумерацию
   // Для женской и мужской анкет - с q1_weight_goal
@@ -717,7 +734,8 @@ function formatQuestionnaireMessage(
              value !== null && 
              value !== undefined && 
              value !== '' &&
-             !key.endsWith('_other');
+             !key.endsWith('_other') &&
+             !(typeof value === 'object' && !Array.isArray(value) && !(value instanceof FileList));
     })
     .sort(([keyA], [keyB]) => {
       const orderA = questionOrderMap.get(keyA) ?? 9999;
@@ -797,14 +815,13 @@ function formatQuestionnaireMessage(
   
   message += `━━━━━━━━━━━━━━━━━━━━\n\n`;
   message += `<b>📞 Контактные данные для связи:</b>\n`;
-  if (telegram) {
-    message += `💬 Telegram: ${telegram}\n`;
-  }
-  if (instagram) {
-    message += `📷 Instagram: @${instagram}\n`;
-  }
-  if (!telegram && !instagram) {
+  const contactLinesMsg = formatContactLinesPlain(formData);
+  if (contactLinesMsg.length === 0) {
     message += `Не указаны\n`;
+  } else {
+    for (const line of contactLinesMsg) {
+      message += `${escapeHtml(line)}\n`;
+    }
   }
   message += `\n━━━━━━━━━━━━━━━━━━━━\n`;
   message += `<i>Анкета заполнена через сайт</i>`;

@@ -1,7 +1,16 @@
 // Структура данных для всех анкет
 // ВАЖНО: Используются строго указанные вопросы без изменений
 
-export type FieldType = 'text' | 'textarea' | 'radio' | 'checkbox' | 'select' | 'file' | 'number' | 'group';
+export type FieldType =
+  | 'text'
+  | 'textarea'
+  | 'radio'
+  | 'checkbox'
+  | 'select'
+  | 'file'
+  | 'number'
+  | 'group'
+  | 'contact-methods';
 
 export interface FieldOption {
   value: string;
@@ -342,21 +351,10 @@ export const babiesQuestionnaire: Questionnaire = {
       otherLabelEn: 'Please provide the name of the person who recommended me'
     },
     {
-      id: 'contact_telegram',
-      type: 'text',
-      label: 'Telegram для связи (укажите @username)',
-      labelEn: 'Telegram for contact (enter @username)',
-      placeholder: '@username',
-      placeholderEn: '@username',
-      required: true
-    },
-    {
-      id: 'contact_instagram',
-      type: 'text',
-      label: 'Instagram для связи (укажите username без @)',
-      labelEn: 'Instagram for contact (enter username without @)',
-      placeholder: 'username',
-      placeholderEn: 'username',
+      id: 'contact_methods',
+      type: 'contact-methods',
+      label: 'Предпочитаемый способ связи',
+      labelEn: 'Preferred contact method(s)',
       required: false
     }
   ]
@@ -607,21 +605,10 @@ export const childrenQuestionnaire: Questionnaire = {
       otherLabelEn: 'Please provide the name of the person who recommended me'
     },
     {
-      id: 'contact_telegram',
-      type: 'text',
-      label: 'Telegram для связи (укажите @username)',
-      labelEn: 'Telegram for contact (enter @username)',
-      placeholder: '@username',
-      placeholderEn: '@username',
-      required: true
-    },
-    {
-      id: 'contact_instagram',
-      type: 'text',
-      label: 'Instagram для связи (укажите username без @)',
-      labelEn: 'Instagram for contact (enter username without @)',
-      placeholder: 'username',
-      placeholderEn: 'username',
+      id: 'contact_methods',
+      type: 'contact-methods',
+      label: 'Предпочитаемый способ связи',
+      labelEn: 'Preferred contact method(s)',
       required: false
     }
   ]
@@ -1122,21 +1109,10 @@ export const femaleQuestionnaire: Questionnaire = {
       otherLabelEn: 'Please provide the name of the person who recommended me'
     },
     {
-      id: 'contact_telegram',
-      type: 'text',
-      label: 'Telegram для связи (укажите @username)',
-      labelEn: 'Telegram for contact (enter @username)',
-      placeholder: '@username',
-      placeholderEn: '@username',
-      required: true
-    },
-    {
-      id: 'contact_instagram',
-      type: 'text',
-      label: 'Instagram для связи (укажите username без @)',
-      labelEn: 'Instagram for contact (enter username without @)',
-      placeholder: 'username',
-      placeholderEn: 'username',
+      id: 'contact_methods',
+      type: 'contact-methods',
+      label: 'Предпочитаемый способ связи',
+      labelEn: 'Preferred contact method(s)',
       required: false
     }
   ]
@@ -1627,21 +1603,10 @@ export const maleQuestionnaire: Questionnaire = {
       otherLabelEn: 'Please provide the name of the person who recommended me'
     },
     {
-      id: 'contact_telegram',
-      type: 'text',
-      label: 'Telegram для связи (укажите @username)',
-      labelEn: 'Telegram for contact (enter @username)',
-      placeholder: '@username',
-      placeholderEn: '@username',
-      required: true
-    },
-    {
-      id: 'contact_instagram',
-      type: 'text',
-      label: 'Instagram для связи (укажите username без @)',
-      labelEn: 'Instagram for contact (enter username without @)',
-      placeholder: 'username',
-      placeholderEn: 'username',
+      id: 'contact_methods',
+      type: 'contact-methods',
+      label: 'Предпочитаемый способ связи',
+      labelEn: 'Preferred contact method(s)',
       required: false
     }
   ]

@@ -4,7 +4,15 @@ import { getQuestionnaireById, type Questionnaire, type QuestionField } from '..
 import { t } from '../utils/i18n';
 import { useLanguage } from '../context/LanguageContext';
 import { sendToTelegram, exportToJSON } from '../utils/telegram';
+import {
+  mergeLegacyContactsIntoFormData,
+  applyLegacyContactAliases,
+  validateContactMethodsBlock,
+  CONTACT_VALUES_KEY,
+  CONTACT_SELECTED_KEY
+} from '../utils/contactMethods';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { ContactMethodsBlock } from './ContactMethodsBlock';
 import './QuestionnaireForm.css';
 
 export const QuestionnaireForm: React.FC = () => {
@@ -34,7 +42,7 @@ export const QuestionnaireForm: React.FC = () => {
       try {
         const parsed = JSON.parse(saved) as { formData?: Record<string, any>; consent?: boolean };
         if (parsed.formData) {
-          setFormData(parsed.formData);
+          setFormData(mergeLegacyContactsIntoFormData(parsed.formData as Record<string, unknown>) as Record<string, any>);
         }
         if (typeof parsed.consent === 'boolean') {
           setConsent(parsed.consent);
@@ -69,6 +77,15 @@ export const QuestionnaireForm: React.FC = () => {
   const allQuestions = getAllQuestions(questionnaire.questions);
   
   const handleInputChange = (fieldId: string, value: any) => {
+    if (fieldId === CONTACT_SELECTED_KEY || fieldId === CONTACT_VALUES_KEY) {
+      setErrors(prev => {
+        const next = { ...prev };
+        for (const k of Object.keys(next)) {
+          if (k.startsWith('contact_methods')) delete next[k];
+        }
+        return next;
+      });
+    }
     setFormData(prev => {
       const newData = {
         ...prev,
@@ -108,6 +125,10 @@ export const QuestionnaireForm: React.FC = () => {
     const newErrors: Record<string, string> = {};
     
     const validateQuestion = (question: QuestionField) => {
+      if (question.type === 'contact-methods') {
+        Object.assign(newErrors, validateContactMethodsBlock(formData));
+        return;
+      }
       // Для составных полей (group) проверяем каждое поле отдельно
       if (question.type === 'group' && question.groupedFields) {
         question.groupedFields.forEach(field => {
@@ -132,20 +153,6 @@ export const QuestionnaireForm: React.FC = () => {
       if (question.type === 'radio' && question.allowOther) {
         if (formData[question.id] === 'other' && !formData[`${question.id}_other`]) {
           newErrors[`${question.id}_other`] = t('common.required', lang);
-        }
-      }
-      
-      // Валидация Telegram
-      if (question.id === 'contact_telegram' && formData[question.id]) {
-        if (!validateTelegram(formData[question.id])) {
-          newErrors[question.id] = t('common.invalidTelegram', lang);
-        }
-      }
-      
-      // Валидация Instagram
-      if (question.id === 'contact_instagram' && formData[question.id]) {
-        if (!validateInstagram(formData[question.id])) {
-          newErrors[question.id] = t('common.invalidInstagram', lang);
         }
       }
       
@@ -181,6 +188,11 @@ export const QuestionnaireForm: React.FC = () => {
       const candidates: HTMLElement[] = [];
 
       for (const errorId of errorKeys) {
+        if (errorId.startsWith('contact_methods')) {
+          const el = document.querySelector('[data-field-id="contact_methods"]');
+          if (el instanceof HTMLElement) candidates.push(el);
+          continue;
+        }
         // Для полей вида *_other пробуем сначала само поле, затем родительский вопрос
         const parentQuestionId = errorId.endsWith('_other') ? errorId.replace(/_other$/, '') : errorId;
         const errorElement =
@@ -241,12 +253,13 @@ export const QuestionnaireForm: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      const payload = applyLegacyContactAliases({ ...formData });
       // Экспортируем в JSON
-      const jsonData = exportToJSON(questionnaire.id, formData);
+      const jsonData = exportToJSON(questionnaire.id, payload);
       console.log('Form data (JSON):', jsonData);
       
       // Отправляем в Telegram
-      const success = await sendToTelegram(questionnaire.id, formData);
+      const success = await sendToTelegram(questionnaire.id, payload);
       
       if (success) {
         // очищаем сохранённые данные для этой анкеты
@@ -369,41 +382,27 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
   
   const renderField = () => {
     switch (question.type) {
+      case 'contact-methods':
+        if (!onFieldChange) return null;
+        return (
+          <ContactMethodsBlock
+            lang={lang}
+            formData={formData}
+            onFieldChange={onFieldChange}
+            errors={errors}
+          />
+        );
       case 'text':
-        const isTelegramField = question.id === 'contact_telegram';
-        const isInstagramField = question.id === 'contact_instagram';
-        
         return (
           <div className="text-input-wrapper">
             <input
               type="text"
               id={question.id}
               value={value || ''}
-              onChange={(e) => {
-                let inputValue = e.target.value;
-                // Автоматически добавляем @ для Telegram
-                if (isTelegramField && inputValue && !inputValue.startsWith('@')) {
-                  inputValue = '@' + inputValue.replace(/^@+/, '');
-                }
-                // Убираем @ для Instagram
-                if (isInstagramField && inputValue.startsWith('@')) {
-                  inputValue = inputValue.replace(/^@+/, '');
-                }
-                onChange(inputValue);
-              }}
+              onChange={(e) => onChange(e.target.value)}
               placeholder={placeholder}
               className={`form-input ${errors?.[question.id] ? 'error' : ''}`}
             />
-            {isTelegramField && value && (
-              <div className={`field-hint ${validateTelegram(value) ? 'hint-success' : 'hint-error'}`}>
-                {validateTelegram(value) ? t('common.telegramHintOk', lang) : t('common.telegramHintBad', lang)}
-              </div>
-            )}
-            {isInstagramField && value && (
-              <div className={`field-hint ${validateInstagram(value) ? 'hint-success' : 'hint-error'}`}>
-                {validateInstagram(value) ? t('common.instagramHintOk', lang) : t('common.instagramHintBad', lang)}
-              </div>
-            )}
           </div>
         );
       
@@ -702,7 +701,7 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
     }
   };
   
-  const isContactField = question.id === 'contact_telegram' || question.id === 'contact_instagram';
+  const isContactField = question.type === 'contact-methods' || question.id === 'contact_methods';
   
   return (
     <div className={`question-field ${isContactField ? 'contact-field' : ''}`} data-field-id={question.id}>
@@ -751,27 +750,6 @@ const QuestionFieldComponent: React.FC<QuestionFieldProps> = ({
     </div>
   );
 };
-
-// Валидация Telegram username
-function validateTelegram(username: string): boolean {
-  if (!username) return false;
-  // Telegram username должен начинаться с @ и содержать только буквы, цифры и подчеркивания
-  // Длина от 5 до 32 символов (без @)
-  const telegramRegex = /^@[a-zA-Z0-9_]{5,32}$/;
-  return telegramRegex.test(username);
-}
-
-// Валидация Instagram username
-function validateInstagram(username: string): boolean {
-  if (!username) return false;
-  // Instagram username: только буквы, цифры, точки и подчеркивания
-  // Длина от 1 до 30 символов, не может начинаться или заканчиваться точкой
-  const instagramRegex = /^[a-zA-Z0-9._]{1,30}$/;
-  if (!instagramRegex.test(username)) return false;
-  if (username.startsWith('.') || username.endsWith('.')) return false;
-  if (username.includes('..')) return false;
-  return true;
-}
 
 // Рекурсивная функция для получения всех вопросов (включая условные)
 function getAllQuestions(questions: QuestionField[]): QuestionField[] {
